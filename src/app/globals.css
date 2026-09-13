@@ -1,0 +1,102 @@
+@import "tailwindcss";
+@source "../**/*.{js,ts,jsx,tsx}";
+
+:root {
+  --amazon-navy: #131921;
+  --amazon-navy-light: #232f3e;
+  --amazon-orange: #ff9900;
+  --amazon-orange-dark: #e88b00;
+  --amazon-yellow: #febd69;
+  --amazon-bg: #eaeded;
+  --amazon-text: #0f1111;
+}
+
+body {
+  background: var(--amazon-bg);
+  color: var(--amazon-text);
+  font-family: "Amazon Ember", Arial, Helvetica, sans-serif;
+}
+
+.amazon-btn-primary {
+  background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+  border: 1px solid #a88734;
+  border-radius: 8px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+}
+
+.amazon-btn-primary:hover {
+  background: linear-gradient(to bottom, #f5d78e, #eeb933);
+}
+
+.amazon-btn-dark {
+  background: linear-gradient(to bottom, #37475a, #232f3e);
+  border: 1px solid #232f3e;
+  border-radius: 8px;
+}
+
+.amazon-btn-dark:hover {
+  background: linear-gradient(to bottom, #485769, #37475a);
+}
+
+.amazon-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.amazon-input {
+  border: 1px solid #888c8c;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(15, 17, 17, 0.15) inset;
+}
+
+.amazon-input:focus {
+  border-color: #e77600;
+  box-shadow: 0 0 3px 2px rgba(228, 121, 17, 0.5);
+  outline: none;
+}
+
+.amazon-logo {
+  font-family: Arial, sans-serif;
+  letter-spacing: -0.05em;
+}
+
+.amazon-smile::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin-top: -2px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M5 8 Q50 18 95 8' stroke='%23ff9900' stroke-width='3' fill='none'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+.amazon-search-btn {
+  border: 1px solid #a88734;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+}
+
+.amazon-search-btn:hover {
+  background: #f3a847 !important;
+}
+
+.amazon-stars {
+  letter-spacing: 0.05em;
+}
+
+.amazon-prime-badge {
+  border: 1px solid #007185;
+  border-radius: 2px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  color: #007185;
+  line-height: 1.2;
+}
+
+.amazon-results-panel {
+  background: #fff;
+  border: 1px solid #ddd;
+}

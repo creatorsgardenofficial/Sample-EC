@@ -1,0 +1,20 @@
+{
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "$npm = Join-Path $env:ProgramFiles 'nodejs\\npm.cmd'; $npx = Join-Path $env:ProgramFiles 'nodejs\\npx.cmd'; if (Test-Path $npm) { Set-Alias -Name npm -Value $npm -Force -Scope Global }; if (Test-Path $npx) { Set-Alias -Name npx -Value $npx -Force -Scope Global }"
+      ]
+    },
+    "Command Prompt": {
+      "path": "C:\\Windows\\System32\\cmd.exe",
+      "args": [],
+      "icon": "terminal-cmd"
+    }
+  },
+  "simpleBrowser.focusLockIndicator.enabled": false
+}
