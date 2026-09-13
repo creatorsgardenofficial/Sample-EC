@@ -57,23 +57,40 @@ function LoginFormInner({ expectedRole }: { expectedRole: LoginRole }) {
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
-
-    const result = await signIn("credentials", {
-      email,
-      password,
-      loginRole: expectedRole,
-      redirect: false,
-    });
-
-    if (result?.error) {
-      setError("メールアドレスまたはパスワードが正しくないか、このログイン画面では使用できません");
-      setIsSubmitting(false);
-      return;
-    }
-
-    await fetchSessionWithRetry();
     const destination = resolveRedirectUrl(callbackUrl, expectedRole);
-    window.location.assign(destination);
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        loginRole: expectedRole,
+        redirect: false,
+        callbackUrl: destination,
+      });
+
+      if (!result || result.error || result.ok === false) {
+        setError(
+          "メールアドレスまたはパスワードが正しくないか、このログイン画面では使用できません"
+        );
+        return;
+      }
+
+      const session = await fetchSessionWithRetry();
+      if (!session.user?.role) {
+        setError(
+          "ログイン処理は完了しましたが、セッションを確立できませんでした。Vercel の AUTH_SECRET 設定と再デプロイを確認してください。"
+        );
+        return;
+      }
+
+      window.location.assign(
+        resolveRedirectUrl(callbackUrl, session.user.role as LoginRole)
+      );
+    } catch {
+      setError("ログイン中にエラーが発生しました。時間をおいて再度お試しください。");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (

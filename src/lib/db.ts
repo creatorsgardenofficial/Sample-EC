@@ -15,6 +15,8 @@ function isPlaceholderDatabaseUrl(url: string): boolean {
 function resolveDatabaseUrl(): string {
   const candidates = [
     process.env.DATABASE_URL,
+    process.env.POSTGRES_URL,
+    process.env.PRISMA_DATABASE_URL,
     process.env.sampleEc_POSTGRES_URL,
     process.env.sampleEc_PRISMA_DATABASE_URL,
     process.env.sampleEc_DATABASE_URL,

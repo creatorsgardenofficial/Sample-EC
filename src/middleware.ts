@@ -48,12 +48,13 @@ export async function middleware(request: NextRequest) {
   }
 
   const pathname = normalizedPath;
+  const authSecret = resolveAuthSecret();
   const token = await getToken({
     req: request,
-    secret: resolveAuthSecret(),
+    ...(authSecret ? { secret: authSecret } : {}),
   });
-  const isLoggedIn = Boolean(token?.role);
   const role = token?.role as TokenRole | undefined;
+  const isLoggedIn = Boolean(token?.sub ?? token?.id ?? role);
 
   if (isRegistrationPath(pathname)) {
     const loginUrl = new URL(loginUrlForPath("/"), request.url);
