@@ -51,6 +51,7 @@ export async function middleware(request: NextRequest) {
   const authSecret = resolveAuthSecret();
   const token = await getToken({
     req: request,
+    secureCookie: request.nextUrl.protocol === "https:",
     ...(authSecret ? { secret: authSecret } : {}),
   });
   const role = token?.role as TokenRole | undefined;

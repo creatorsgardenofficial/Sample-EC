@@ -42,11 +42,24 @@ async function fetchSessionWithRetry() {
   return { user: undefined };
 }
 
+function loginErrorMessage(errorCode: string | null): string | null {
+  if (!errorCode) return null;
+  if (errorCode === "CredentialsSignin") {
+    return "メールアドレスまたはパスワードが正しくないか、このログイン画面では使用できません";
+  }
+  if (errorCode === "Configuration") {
+    return "認証設定に問題があります。AUTH_SECRET と DATABASE_URL を確認してください。";
+  }
+  return "ログインに失敗しました。入力内容を確認してください。";
+}
+
 function LoginFormInner({ expectedRole }: { expectedRole: LoginRole }) {
   const searchParams = useSearchParams();
   const callbackUrl =
     searchParams.get("callbackUrl") ?? defaultRedirectForRole(expectedRole);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    loginErrorMessage(searchParams.get("error"))
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
