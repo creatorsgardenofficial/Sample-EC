@@ -4,9 +4,24 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+function resolveDatabaseUrl(): string {
+  return (
+    process.env.DATABASE_URL ??
+    process.env.sampleEc_POSTGRES_URL ??
+    process.env.sampleEc_PRISMA_DATABASE_URL ??
+    process.env.sampleEc_DATABASE_URL ??
+    ""
+  );
+}
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
+    datasources: {
+      db: {
+        url: resolveDatabaseUrl(),
+      },
+    },
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 
