@@ -4,12 +4,25 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-function resolveDatabaseUrl(): string {
+function isPlaceholderDatabaseUrl(url: string): boolean {
   return (
-    process.env.DATABASE_URL ??
-    process.env.sampleEc_POSTGRES_URL ??
-    process.env.sampleEc_PRISMA_DATABASE_URL ??
-    process.env.sampleEc_DATABASE_URL ??
+    url.includes("db.example.com") ||
+    url.includes("USER:PASSWORD") ||
+    url.includes("user:pass@")
+  );
+}
+
+function resolveDatabaseUrl(): string {
+  const candidates = [
+    process.env.DATABASE_URL,
+    process.env.sampleEc_POSTGRES_URL,
+    process.env.sampleEc_PRISMA_DATABASE_URL,
+    process.env.sampleEc_DATABASE_URL,
+  ].filter((url): url is string => Boolean(url));
+
+  return (
+    candidates.find((url) => !isPlaceholderDatabaseUrl(url)) ??
+    candidates[0] ??
     ""
   );
 }

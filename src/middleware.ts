@@ -1,3 +1,4 @@
+import { resolveAuthSecret } from "@/lib/auth-secret";
 import { loginUrlForPath } from "@/lib/login";
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
@@ -49,7 +50,7 @@ export async function middleware(request: NextRequest) {
   const pathname = normalizedPath;
   const token = await getToken({
     req: request,
-    secret: process.env.AUTH_SECRET,
+    secret: resolveAuthSecret(),
   });
   const isLoggedIn = Boolean(token?.role);
   const role = token?.role as TokenRole | undefined;
