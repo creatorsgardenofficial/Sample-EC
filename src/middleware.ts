@@ -1,6 +1,9 @@
-import { auth } from "@/auth";
+import { authConfig } from "@/auth.config";
 import { loginUrlForPath } from "@/lib/login";
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
+
+const { auth } = NextAuth(authConfig);
 
 function normalizePathname(pathname: string): string {
   const collapsed = pathname.replace(/\/{2,}/g, "/");
