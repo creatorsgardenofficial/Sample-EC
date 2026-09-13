@@ -1,10 +1,8 @@
-import { resolveAuthSecret } from "@/lib/auth-secret";
 import type { NextAuthConfig } from "next-auth";
 
 type AuthRole = "ADMIN" | "SELLER" | "USER";
 
 export const authConfig = {
-  secret: resolveAuthSecret(),
   trustHost: true,
   pages: {
     signIn: "/login",
