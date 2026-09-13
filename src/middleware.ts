@@ -1,9 +1,8 @@
-import { authConfig } from "@/auth.config";
 import { loginUrlForPath } from "@/lib/login";
-import NextAuth from "next-auth";
-import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
-const { auth } = NextAuth(authConfig);
+type TokenRole = "ADMIN" | "SELLER" | "USER";
 
 function normalizePathname(pathname: string): string {
   const collapsed = pathname.replace(/\/{2,}/g, "/");
@@ -38,8 +37,8 @@ function isProductReadApi(pathname: string): boolean {
   return false;
 }
 
-export default auth((req) => {
-  const url = req.nextUrl.clone();
+export async function middleware(request: NextRequest) {
+  const url = request.nextUrl.clone();
   const normalizedPath = normalizePathname(url.pathname);
 
   if (normalizedPath !== url.pathname) {
@@ -48,11 +47,15 @@ export default auth((req) => {
   }
 
   const pathname = normalizedPath;
-  const session = req.auth;
-  const role = session?.user?.role;
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+  });
+  const isLoggedIn = Boolean(token?.role);
+  const role = token?.role as TokenRole | undefined;
 
   if (isRegistrationPath(pathname)) {
-    const loginUrl = new URL(loginUrlForPath("/"), req.url);
+    const loginUrl = new URL(loginUrlForPath("/"), request.url);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -61,12 +64,12 @@ export default auth((req) => {
   }
 
   if (pathname.startsWith("/admin")) {
-    if (!session) {
-      const loginUrl = new URL(loginUrlForPath(pathname, pathname), req.url);
+    if (!isLoggedIn) {
+      const loginUrl = new URL(loginUrlForPath(pathname, pathname), request.url);
       return NextResponse.redirect(loginUrl);
     }
     if (role !== "ADMIN") {
-      const deniedUrl = new URL("/seller/unauthorized", req.url);
+      const deniedUrl = new URL("/seller/unauthorized", request.url);
       deniedUrl.searchParams.set("from", "admin");
       return NextResponse.redirect(deniedUrl);
     }
@@ -76,30 +79,30 @@ export default auth((req) => {
     pathname.startsWith("/seller") &&
     pathname !== "/seller/unauthorized"
   ) {
-    if (!session) {
-      const loginUrl = new URL(loginUrlForPath(pathname, pathname), req.url);
+    if (!isLoggedIn) {
+      const loginUrl = new URL(loginUrlForPath(pathname, pathname), request.url);
       return NextResponse.redirect(loginUrl);
     }
     if (role !== "SELLER" && role !== "ADMIN") {
-      const deniedUrl = new URL("/seller/unauthorized", req.url);
+      const deniedUrl = new URL("/seller/unauthorized", request.url);
       return NextResponse.redirect(deniedUrl);
     }
   }
 
-  if ((isShopPath(pathname) || isProductReadApi(pathname)) && !session) {
+  if ((isShopPath(pathname) || isProductReadApi(pathname)) && !isLoggedIn) {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "ログインが必要です" }, { status: 401 });
     }
 
     const callbackPath = `${pathname}${url.search}`;
-    const loginUrl = new URL(loginUrlForPath(pathname, callbackPath), req.url);
+    const loginUrl = new URL(loginUrlForPath(pathname, callbackPath), request.url);
     return NextResponse.redirect(loginUrl);
   }
 
   const response = NextResponse.next();
   response.headers.set("x-pathname", pathname);
   return response;
-});
+}
 
 export const config = {
   matcher: [
