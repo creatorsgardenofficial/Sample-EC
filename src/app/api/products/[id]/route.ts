@@ -9,6 +9,7 @@ import {
   parseUploadFile,
 } from "@/lib/upload";
 import { auth } from "@/auth";
+import type { AppSession } from "@/lib/auth-utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -17,7 +18,7 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-async function assertProductEditor(session: NonNullable<Awaited<ReturnType<typeof auth>>>, productId: string) {
+async function assertProductEditor(session: AppSession, productId: string) {
   const product = await prisma.product.findUnique({ where: { id: productId } });
 
   if (!product) {

@@ -71,7 +71,7 @@ function LoginFormInner({ expectedRole }: { expectedRole: LoginRole }) {
       return;
     }
 
-    const session = await fetchSessionWithRetry();
+    await fetchSessionWithRetry();
     const destination = resolveRedirectUrl(callbackUrl, expectedRole);
     window.location.assign(destination);
   }
